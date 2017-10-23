@@ -31,6 +31,11 @@ from rasa_core.events import ActionExecuted
 from rasa_core.featurizers import Featurizer
 from rasa_core.slots import Slot
 from rasa_core.trackers import DialogueStateTracker, SlotSet
+<<<<<<< HEAD
+=======
+from rasa_core import utils
+from rasa_core.utils import read_yaml_file
+>>>>>>> master
 
 logger = logging.getLogger(__name__)
 
@@ -411,28 +416,27 @@ class Domain(with_metaclass(abc.ABCMeta, object)):
 class TemplateDomain(Domain):
     @classmethod
     def load(cls, file_name):
-        if not os.path.isfile(file_name):
+        if os.path.isfile(file_name):
             raise Exception(
                     "Failed to load domain specification from '{}'. "
                     "File not found!".format(os.path.abspath(file_name)))
 
-        with io.open(file_name, encoding="utf-8") as f:
-            data = yaml.load(f.read())
-            utter_templates = cls.collect_templates(data.get("templates", {}))
-            action_factory = data.get("action_factory", None)
-            topics = [Topic(name) for name in data.get("topics", [])]
-            slots = cls.collect_slots(data.get("slots", {}))
-            additional_arguments = data.get("config", {})
-            return TemplateDomain(
-                    data.get("intents", []),
-                    data.get("entities", []),
-                    slots,
-                    utter_templates,
-                    data.get("actions", []),
-                    action_factory,
-                    topics,
-                    **additional_arguments
-            )
+        data = read_yaml_file(file_name)
+        utter_templates = cls.collect_templates(data.get("templates", {}))
+        action_factory = data.get("action_factory", None)
+        topics = [Topic(name) for name in data.get("topics", [])]
+        slots = cls.collect_slots(data.get("slots", {}))
+        additional_arguments = data.get("config", {})
+        return TemplateDomain(
+                data.get("intents", []),
+                data.get("entities", []),
+                slots,
+                utter_templates,
+                data.get("actions", []),
+                action_factory,
+                topics,
+                **additional_arguments
+        )
 
     @staticmethod
     def collect_slots(slot_dict):
